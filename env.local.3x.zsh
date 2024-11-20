@@ -20,6 +20,8 @@ export JAVA_HOME=$(/usr/libexec/java_home -v1.8)
 
 export DPM_CMD_SAMPLE_STF='stf \
   -v \
+  --env-var DPM_USER \
+  --env-var DPM_PASSWORD \
   --docker-extra-options="-p 5678:5678/tcp" \
 test \
   -v -ra --capture=no \
@@ -92,8 +94,6 @@ alias setup.test-org-and-sdcs='setup.test-org && setup.sdc && start_sdc_and_set_
 alias ch-setup-test-org-and-sdcs=setup.test-org-and-sdcs
 unalias ch-rebuild-and-setup 2>/dev/null || true
 
-alias setup.test-users-yaml="yq -i '.Admin_test.password = strenv(DPM_PASSWORD)' $HOME/src/streamsets/dpm-tests/test_users.yaml"
-
 export HELP="Helpful commands. 'echo \$HELP' if you need a reminder.
 # Restart postgres, influxdb and rebuild
 setup.dbs-and-rebuild
@@ -105,8 +105,6 @@ ch-run
 setup.test-org-and-sdcs
 # Start a single SDC
 setup.sdc
-# Setup test_users.yaml for STF testing
-setup.test-users-yaml
 # Sample STF execution.
 $DPM_CMD_SAMPLE_STF"
 

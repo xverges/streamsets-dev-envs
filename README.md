@@ -23,7 +23,6 @@ External dependencies:
 - [jq](https://jqlang.github.io/jq/)
 - [op](https://developer.1password.com/docs/cli/get-started/#install) - 1password cli
 - [Rancher Desktop](https://rancherdesktop.io) using docker
-- [yq](https://github.com/mikefarah/yq?tab=readme-ov-file#macos--linux-via-homebrew)
 
 ## Scripts
 
