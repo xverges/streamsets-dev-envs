@@ -6,9 +6,16 @@ name=$(basename $0); name=$name:r:s/env.//
 echo $name
 source set-prompt-for-env.zsh $name 
 
-# Build ####
+# Build and debug ####
 export JAVA_HOME=$(/usr/libexec/java_home -v11)
 export DPM_REPO=$HOME/src/streamsets/domainserver-master
+export IDE_DBG_VSCODE='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=5005,suspend=y'
+alias ch-set-dpm-dist='pushd $DPM_REPO/dist/target/dist/streamsets-dpm-*/ && export DPM_DIST=$(pwd) && popd'
+alias ch-opts-set-debug-intellij='export DPM_JAVA_OPTS=$IDE_DBG;echo DPM needs to start after the debugger.'
+alias ch-opts-set-debug-vscode='export DPM_JAVA_OPTS=$IDE_DBG_VSCODE;echo DPM will wait for the debugger.'
+alias ch-run='ch-set-dpm-dist && $DPM_DIST/bin/streamsets dpm'
+unalias ch-opts-set-debug 2>/dev/null || true
+unalias ch-opts-set-debug-ui 2>/dev/null || true
 
 # Auth ####
 export ONE_PASSWORD_ITEM=local.platform
@@ -69,6 +76,9 @@ export HELP="Helpful commands. 'echo \$HELP' if you need a reminder.
 python $HOME/src/streamsets/dpm-scripts/dpm-platform.py --batch --verbose run
 # Restart the services
 python $HOME/src/streamsets/dpm-scripts/dpm-platform.py --verbose restart
+# Run and debug
+ch-opts- ...
+ch-run
 # Create test org + create credentials + start SDCs. Uses \$SDC_VERSION and \$SDC_START_EXTRA_PARAMS
 setup.test-org-and-sdcs
 # Set the environment vars needed for STF tests.
