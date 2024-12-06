@@ -2,24 +2,18 @@
 
 source _env.check-docker.zsh || return 1
 
+
+
 name=$(basename $0); name=$name:r:s/env.//
 echo $name
 source set-prompt-for-env.zsh $name 
 
 # Build ####
-export JAVA_HOME=$(/usr/libexec/java_home -v11)
+export JAVA_HOME=$(/usr/libexec/java_home -v21)
 export DPM_REPO=$HOME/src/streamsets/domainserver-master
 
 # Auth ####
-export ONE_PASSWORD_ITEM=local.platform
-export ASTER_LOGIN_URL=http://host.docker.internal:4200
-export ASTER_SCH_URL=http://host.docker.internal:18631
-export ASTER_EMAIL=$(op read "op://Employee/$ONE_PASSWORD_ITEM/username")
-export ASTER_EMAIL_PWD=$(op read "op://Employee/$ONE_PASSWORD_ITEM/password")
-export ASTER_URL=${ASTER_LOGIN_URL}
-export ASTER_USER_EMAIL=${ASTER_EMAIL}
-export ASTER_USER_PASSWORD=${ASTER_EMAIL_PWD}
-export FIREBASE_API_KEY=$(op read "op://Employee/$ONE_PASSWORD_ITEM/firebase-api-key") 
+source _env.platform.zsh
 
 # Tests ####
 export DATAOPS_TEST_EMAIL_PASSWORD=${DATAOPS_TEST_EMAIL_PASSWORD:-UniterestingValue}
