@@ -4,7 +4,7 @@ source _env.check-docker.zsh || return 1
 
 #check if one password CLI is installed
 if ! type op > /dev/null; then
-  echo "PLease install 1Password CLI and turn on integration"
+  echo "Please install 1Password CLI and turn on integration"
   echo "https://developer.1password.com/docs/cli/get-started/"
   echo "https://developer.1password.com/docs/cli/app-integration/"
   return 1
@@ -48,14 +48,8 @@ fi
 export DATAOPS_TEST_EMAIL_PASSWORD=${DATAOPS_TEST_EMAIL_PASSWORD:-UniterestingValue}
 export SDC_START_EXTRA_PARAMS="--stage-lib orchestrator jdbc"
 
-if command -v py-4.x-stf &> /dev/null; then
-  py-4.x-stf
-elif command -v 4x &> /dev/null; then
-  4x
-else
-  echo "4.x Python env command not found"
-  return 1
-fi
+py-4.x-stf
+
 
 export DPM_CMD_START_SDC='stf \
   --env-var FIREBASE_API_KEY \
