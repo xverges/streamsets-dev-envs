@@ -1,6 +1,6 @@
 #!/bin/echo Run: source
 
-source _env.check-docker.zsh || return 1
+source _env.prerequisites.zsh || return 1
 
 
 
@@ -23,7 +23,6 @@ export SDC_START_EXTRA_PARAMS=${SDC_START_EXTRA_PARAMS:-"--stage-lib orchestrato
 py-4.x-stf
 
 alias setup.test-org-and-sdcs="$HOME/src/streamsets/dpm-scripts/platform/setup-control-plane-testing.sh && source $HOME/src/streamsets/dpm-scripts/platform/.stf-env.sh"
-alias setup.credentials="source $HOME/src/streamsets/dpm-scripts/platform/.stf-env.sh"
 
 # Note 1: This is stolen from dpm-scripts/platform/setup-control-plane-testing.sh
 # Note 2: Option "--enable-base-http-url private" made STF start unhappy
@@ -65,8 +64,8 @@ python $HOME/src/streamsets/dpm-scripts/dpm-platform.py --batch --verbose run
 python $HOME/src/streamsets/dpm-scripts/dpm-platform.py --verbose restart
 # Create test org + create credentials + start SDCs. Uses \$SDC_VERSION and \$SDC_START_EXTRA_PARAMS
 setup.test-org-and-sdcs
-# Set the environment vars needed for STF tests.
-setup.credentials
+# Set the environment vars needed for STF tests (updates in 1pass).
+set_cred_from_aster_dev
 # Start a single SDC
 setup.sdc
 # Sample STF execution.

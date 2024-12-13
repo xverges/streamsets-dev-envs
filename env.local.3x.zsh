@@ -1,6 +1,6 @@
 #!/bin/echo Run: source
 
-source _env.check-docker.zsh || return 1
+source _env.prerequisites.zsh || return 1
 
 name=$(basename $0); name=$name:r:s/env.//
 echo $name

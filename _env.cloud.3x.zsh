@@ -1,6 +1,6 @@
 #!/bin/echo Run: source
 
-source _env.check-docker.zsh || return 1
+source _env.prerequisites.zsh || return 1
 
 if [ -z "$ONE_PASSWORD_ITEM" ]; then
   echo 'The environment variable ONE_PASSWORD_ITEM needs to be set, and needs to specify a 1password item in the Employee vault.'
