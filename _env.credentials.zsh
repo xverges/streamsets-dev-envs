@@ -21,7 +21,7 @@ while IFS=: read -r key value; do
   fi
 
   field_map[$key]=$value
-done <<< $(op item get $ONE_PASSWORD_ITEM --format json | jq -r '.fields[] | "\(.label): \(.value)"')
+done <<< $(op item get $ONE_PASSWORD_ITEM --format json | jq -r '.fields[], .urls[] | "\(.label): \(.value//.href)"')
 
 #For debug purpose
 #for key val in "${(@kv)field_map}"; do
@@ -31,7 +31,7 @@ done <<< $(op item get $ONE_PASSWORD_ITEM --format json | jq -r '.fields[] | "\(
 
 # Auth ####
 
-export ASTER_EMAIL=${field_map[username]}
+export ASTER_EMAIL=${field_map[email]}
 export ASTER_EMAIL_PWD=${field_map[password]}
 export ASTER_LOGIN_URL=${field_map[website]}
 export CRED_ID=${field_map[CRED_ID]}
