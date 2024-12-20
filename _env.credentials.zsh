@@ -31,7 +31,12 @@ done <<< $(op item get $ONE_PASSWORD_ITEM --format json | jq -r '.fields[], .url
 
 # Auth ####
 
-export ASTER_EMAIL=${field_map[email]}
+# 1password does this weird thing where the label can be either username or email
+if [[ -v field_map[email] ]]; then
+    export ASTER_EMAIL=${field_map[email]}
+else
+    export ASTER_EMAIL=${field_map[username]}
+fi
 export ASTER_EMAIL_PWD=${field_map[password]}
 export ASTER_LOGIN_URL=${field_map[website]}
 export CRED_ID=${field_map[CRED_ID]}
