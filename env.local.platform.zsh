@@ -1,13 +1,15 @@
 #!/bin/echo Run: source
 
-source _env.check-docker.zsh || return 1
+source _env.prerequisites.zsh || return 1
+
+
 
 name=$(basename $0); name=$name:r:s/env.//
 echo $name
 source set-prompt-for-env.zsh $name 
 
 # Build and debug ####
-export JAVA_HOME=$(/usr/libexec/java_home -v11)
+export JAVA_HOME=$(/usr/libexec/java_home -v21)
 export DPM_REPO=$HOME/src/streamsets/domainserver-master
 export IDE_DBG_VSCODE='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=5005,suspend=y'
 alias ch-set-dpm-dist='pushd $DPM_REPO/dist/target/dist/streamsets-dpm-*/ && export DPM_DIST=$(pwd) && popd'
@@ -19,15 +21,8 @@ unalias ch-opts-set-debug-ui 2>/dev/null || true
 
 # Auth ####
 export ONE_PASSWORD_ITEM=local.platform
-export ASTER_LOGIN_URL=http://host.docker.internal:4200
-export ASTER_SCH_URL=http://host.docker.internal:18631
-export ASTER_EMAIL=$(op read "op://Employee/$ONE_PASSWORD_ITEM/username")
-export ASTER_EMAIL_PWD=$(op read "op://Employee/$ONE_PASSWORD_ITEM/password")
-export ASTER_URL=${ASTER_LOGIN_URL}
-export ASTER_USER_EMAIL=${ASTER_EMAIL}
-export ASTER_USER_PASSWORD=${ASTER_EMAIL_PWD}
-export FIREBASE_API_KEY=$(op read "op://Employee/$ONE_PASSWORD_ITEM/firebase-api-key") 
-
+source _env.credentials.zsh
+get_from_1pass
 # Tests ####
 export DATAOPS_TEST_EMAIL_PASSWORD=${DATAOPS_TEST_EMAIL_PASSWORD:-UniterestingValue}
 export SDC_VERSION=${SDC_VERSION:-5.12.0}
@@ -35,8 +30,7 @@ export SDC_START_EXTRA_PARAMS=${SDC_START_EXTRA_PARAMS:-"--stage-lib orchestrato
 
 py-4.x-stf
 
-alias setup.test-org-and-sdcs="$HOME/src/streamsets/dpm-scripts/platform/setup-control-plane-testing.sh && source $HOME/src/streamsets/dpm-scripts/platform/.stf-env.sh"
-alias setup.credentials="source $HOME/src/streamsets/dpm-scripts/platform/.stf-env.sh"
+alias setup.test-org-and-sdcs="$HOME/src/streamsets/dpm-scripts/platform/setup-control-plane-testing.sh; set_cred_from_aster_dev"
 
 # Note 1: This is stolen from dpm-scripts/platform/setup-control-plane-testing.sh
 # Note 2: Option "--enable-base-http-url private" made STF start unhappy
@@ -81,8 +75,8 @@ ch-opts- ...
 ch-run
 # Create test org + create credentials + start SDCs. Uses \$SDC_VERSION and \$SDC_START_EXTRA_PARAMS
 setup.test-org-and-sdcs
-# Set the environment vars needed for STF tests.
-setup.credentials
+# Set the environment vars needed for STF tests (updates in 1pass).
+set_cred_from_aster_dev
 # Start a single SDC
 setup.sdc
 # Sample STF execution.

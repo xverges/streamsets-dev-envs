@@ -1,27 +1,13 @@
 #!/bin/echo Run: source
 
-source _env.check-docker.zsh || return 1
-
-if [ -z "$ONE_PASSWORD_ITEM" ]; then
-  echo 'The environment variable ONE_PASSWORD_ITEM needs to be set, and needs to specify a 1password item in the Employee vault.'
-  echo 'The item needs to specify  `username`, `password`, `website`, `CRED_ID` and `CRED_TOKEN`'
-  return 1
-fi
+source _env.prerequisites.zsh || return 1
+source _env.credentials.zsh || return 1
+get_from_1pass
+echo "Auth set from 1Password"
 
 name=${1:-$ONE_PASSWORD_ITEM}
 echo $name
 source set-prompt-for-env.zsh $name 
-
-# Auth ####
-export ASTER_EMAIL=$(op read "op://Employee/$ONE_PASSWORD_ITEM/username")
-export ASTER_EMAIL_PWD=$(op read "op://Employee/$ONE_PASSWORD_ITEM/password")
-export ASTER_LOGIN_URL=$(op read "op://Employee/$ONE_PASSWORD_ITEM/website")
-export CRED_ID=$(op read "op://Employee/$ONE_PASSWORD_ITEM/CRED_ID")
-export CRED_TOKEN=$(op read "op://Employee/$ONE_PASSWORD_ITEM/CRED_TOKEN")
-export ASTER_URL=${ASTER_LOGIN_URL}
-export ASTER_USER_EMAIL=${ASTER_EMAIL}
-export ASTER_USER_PASSWORD=${ASTER_EMAIL_PWD}
-export FIREBASE_API_KEY=$(op read "op://Employee/$ONE_PASSWORD_ITEM/firebase-api-key") 
 
 # Tests ####
 export DATAOPS_TEST_EMAIL_PASSWORD=${DATAOPS_TEST_EMAIL_PASSWORD:-UniterestingValue}
