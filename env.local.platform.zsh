@@ -13,8 +13,9 @@ export JAVA_HOME=$(/usr/libexec/java_home -v21)
 export DPM_REPO=$HOME/src/streamsets/domainserver-master
 
 # Auth ####
-source _env.platform.zsh
-
+export ONE_PASSWORD_ITEM=local.platform
+source _env.credentials.zsh
+get_from_1pass
 # Tests ####
 export DATAOPS_TEST_EMAIL_PASSWORD=${DATAOPS_TEST_EMAIL_PASSWORD:-UniterestingValue}
 export SDC_VERSION=${SDC_VERSION:-5.12.0}

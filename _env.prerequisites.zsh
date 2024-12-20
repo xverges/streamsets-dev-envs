@@ -13,7 +13,7 @@ if [ ! -S /var/run/docker.sock ]; then
       return 1
     fi
   done
-  echo 'No containers env running start one of ${(k)container_env}'
+  echo "No containers env running start one of ${(k)container_env}"
   return 1 
 fi
 
