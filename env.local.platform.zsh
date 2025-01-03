@@ -18,6 +18,8 @@ alias ch-opts-set-debug-vscode='export DPM_JAVA_OPTS=$IDE_DBG_VSCODE;echo DPM wi
 alias ch-run='ch-set-dpm-dist && $DPM_DIST/bin/streamsets dpm'
 unalias ch-opts-set-debug 2>/dev/null || true
 unalias ch-opts-set-debug-ui 2>/dev/null || true
+unalias ch-set-dpmdist 2>/dev/null || true
+unset DPM_VERSION || true
 
 # Auth ####
 export ONE_PASSWORD_ITEM=local.platform
@@ -30,7 +32,8 @@ export SDC_START_EXTRA_PARAMS=${SDC_START_EXTRA_PARAMS:-"--stage-lib orchestrato
 
 py-4.x-stf
 
-alias setup.test-org-and-sdcs="$HOME/src/streamsets/dpm-scripts/platform/setup-control-plane-testing.sh; set_cred_from_aster_dev"
+alias setup.credentials="source $HOME/src/streamsets/dpm-scripts/platform/.stf-env.sh"
+alias setup.test-org-and-sdcs="$HOME/src/streamsets/dpm-scripts/platform/setup-control-plane-testing.sh && setup.credentials"
 
 # Note 1: This is stolen from dpm-scripts/platform/setup-control-plane-testing.sh
 # Note 2: Option "--enable-base-http-url private" made STF start unhappy
@@ -75,8 +78,8 @@ ch-opts- ...
 ch-run
 # Create test org + create credentials + start SDCs. Uses \$SDC_VERSION and \$SDC_START_EXTRA_PARAMS
 setup.test-org-and-sdcs
-# Set the environment vars needed for STF tests (updates in 1pass).
-set_cred_from_aster_dev
+# Set the environment vars needed for STF tests
+setup.credentials
 # Start a single SDC
 setup.sdc
 # Sample STF execution.
