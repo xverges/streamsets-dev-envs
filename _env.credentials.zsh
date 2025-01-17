@@ -63,3 +63,13 @@ else
   return 1
 fi
 }
+
+function set_cred_from_aster_dev(){
+  source $HOME/src/streamsets/aster-security/dev/.stf-env.sh
+  #echo $CRED_ID
+  #echo $CRED_TOKEN
+  op item edit $ONE_PASSWORD_ITEM "CRED_ID=$CRED_ID" > /dev/null || return 1
+  echo "CRED_ID updated"
+  op item edit $ONE_PASSWORD_ITEM "CRED_TOKEN=$CRED_TOKEN" > /dev/null || return 1
+  echo "CRED_TOKEN updated"
+}
