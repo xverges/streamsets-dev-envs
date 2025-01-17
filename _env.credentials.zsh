@@ -38,9 +38,13 @@ else
     export ASTER_EMAIL=${field_map[username]}
 fi
 export ASTER_EMAIL_PWD=${field_map[password]}
-export ASTER_LOGIN_URL=${field_map[website]}
-export CRED_ID=${field_map[CRED_ID]}
-export CRED_TOKEN=${field_map[CRED_TOKEN]}
+# Remove trailing slash if it is there
+export ASTER_LOGIN_URL=${field_map[website]%/}
+# 1password won't have token for local.platform
+if [[ -v field_map[CRED_ID] ]]; then
+  export CRED_ID=${field_map[CRED_ID]}
+  export CRED_TOKEN=${field_map[CRED_TOKEN]}
+fi
 export ASTER_URL=${ASTER_LOGIN_URL}
 export ASTER_USER_EMAIL=${ASTER_EMAIL}
 export ASTER_USER_PASSWORD=${ASTER_EMAIL_PWD}
