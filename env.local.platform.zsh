@@ -12,8 +12,9 @@ source set-prompt-for-env.zsh $name
 export JAVA_HOME=$(/usr/libexec/java_home -v21)
 export DPM_REPO=$HOME/src/streamsets/domainserver-master
 export IDE_DBG_VSCODE='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=5005,suspend=y'
+export IDE_DBG_INTELLIJ='-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=y'
 alias ch-set-dpm-dist='pushd $DPM_REPO/dist/target/dist/streamsets-dpm-*/ && export DPM_DIST=$(pwd) && popd'
-alias ch-opts-set-debug-intellij='export DPM_JAVA_OPTS=$IDE_DBG;echo DPM needs to start after the debugger.'
+alias ch-opts-set-debug-intellij='export DPM_JAVA_OPTS=$IDE_DBG_INTELLIJ;echo DPM will wait for the debugger.'
 alias ch-opts-set-debug-vscode='export DPM_JAVA_OPTS=$IDE_DBG_VSCODE;echo DPM will wait for the debugger.'
 alias ch-run='ch-set-dpm-dist && $DPM_DIST/bin/streamsets dpm'
 unalias ch-opts-set-debug 2>/dev/null || true

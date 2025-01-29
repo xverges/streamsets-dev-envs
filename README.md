@@ -56,7 +56,7 @@ Requires this 1password item configuartion:
 
 ### `env.local.3x.zsh`
 
-Local build of a maven-based version of 3.x, using `dpm-scripts/dom-util.py`.  
+Local build of a maven-based version of 3.x, using `dpm-scripts/dpm-utils.py`.  
 It uses postgres to ease running at the same time than the local platform build.  
 By default, uses SDC 5.8.0.  
 <http://host.docker.internal:20631>

@@ -17,6 +17,8 @@ export SDC_START_EXTRA_PARAMS="--stage-lib orchestrator jdbc"
 
 export DPM_REPO=$HOME/src/streamsets/domainserver-3x
 export JAVA_HOME=$(/usr/libexec/java_home -v1.8)
+export IDE_DBG_VSCODE='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=5005,suspend=y'
+export IDE_DBG_INTELLIJ='-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=y'
 
 export DPM_CMD_SAMPLE_STF='stf \
   -v \
@@ -61,7 +63,18 @@ alias setup.dbs-and-rebuild='python ~/src/streamsets/dpm-scripts/dpm-utils.py --
  sed -i "" "s/#org.quartz.jobStore.driverDelegateClass/org.quartz.jobStore.driverDelegateClass/" $DPM_DIST/etc/scheduler-app.properties'
 # We are modifying the componentId so that we can have a fake HA environment with multiple instances on different ports
 
+alias ch-opts-set-debug-intellij='export DPM_JAVA_OPTS=$IDE_DBG_INTELLIJ;echo DPM will wait for the debugger.'
+alias ch-opts-set-debug-vscode='export DPM_JAVA_OPTS=$IDE_DBG_VSCODE;echo DPM will wait for the debugger.'
 alias ch-run='ch-set-dpm-dist && $DPM_DIST/bin/streamsets dpm'
+alias ch-rebuild-and-restart='ch-set-dpm-dist && \
+  cd $DPM_REPO && \
+  etc_backup=$(mktemp -d) && cp $DPM_DIST/etc/* $etc_backup && \
+  ./mvnw package -Ddist -DskipTests -DdistType=dev-postgres && \
+  cp -r $etc_backup/* $DPM_DIST/etc && \
+  rm -rf $etc_backup && \
+  $DPM_DIST/bin/streamsets dpm'
+unalias ch-opts-set-debug 2>/dev/null || true
+unalias ch-opts-set-debug-ui 2>/dev/null || true
 
 alias setup.test-org='ch-set-dpm-dist && \
  python ~/src/streamsets/dpm-scripts/dpm-utils.py \
@@ -99,8 +112,10 @@ export HELP="Helpful commands. 'echo \$HELP' if you need a reminder.
 setup.dbs-and-rebuild
 # Set \$DPM_DIST
 setup.dpm-dist
-# Run SCH
+# Run and debug
+ch-opts- ...
 ch-run
+ch-rebuild-and-restart
 # Create test org + start SDCs. Uses \$SDC_VERSION and \$SDC_START_EXTRA_PARAMS
 setup.test-org-and-sdcs
 # Start a single SDC
