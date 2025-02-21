@@ -16,7 +16,7 @@ export SDC_VERSION=${SDC_VERSION:-5.8.0}
 export SDC_START_EXTRA_PARAMS="--stage-lib orchestrator jdbc"
 
 export DPM_REPO=$HOME/src/streamsets/domainserver-3x
-export JAVA_HOME=$(/usr/libexec/java_home -v1.8)
+export JAVA_HOME=$(/usr/libexec/java_home -v17)
 export IDE_DBG_VSCODE='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=5005,suspend=y'
 export IDE_DBG_INTELLIJ='-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=y'
 
@@ -45,23 +45,6 @@ start sdc \
 
 alias ch-set-dpm-dist='pushd $DPM_REPO/dist/target/dist/streamsets-dpm-*/ && export DPM_DIST=$(pwd) && popd'
 alias setup.dpm-dist=ch-set-dpm-dist
-
-# TO-DO: make DPM_LOG and DPM_CONF dependant on $DPM_PORT, to be able to run multi-instance
-alias setup.dbs-and-rebuild='python ~/src/streamsets/dpm-scripts/dpm-utils.py --host host.docker.internal \
-   --port $DPM_PORT --expiration=30 --java-version 1.8 --dpm-dir $DPM_REPO \
-   --database postgres --database-version 14.6 --build-tool maven \
-   install clean && \
- ch-set-dpm-dist && \
- $DPM_DIST/dev/00-initpostgresql.sh && \
- $DPM_DIST/dev/01-initdb-java.sh && \
- $DPM_DIST/dev/02-initsecurity-java.sh $DPM_PORT && \
- $DPM_DIST/bin/streamsets dpmcli security systemId -c && \
- $DPM_DIST/bin/streamsets dpmcli security activationKey --dev --devExpires=30 && \
- find $DPM_DIST/etc -name "*.properties" -exec sed -i "" "s/18631/$DPM_PORT/g" {} \; && \
- find $DPM_DIST/etc -name "*.properties" -exec sed -i "" "s/18632/$DPM_PORT_ADMIN/g" {} \; && \
- find $DPM_DIST/etc -name "*.properties" -exec sed -i "" "s/\(dpm\.componentId=[a-zA-Z_]*\)000/\1${DPM_PORT}/g" {} \; && \
- sed -i "" "s/#org.quartz.jobStore.driverDelegateClass/org.quartz.jobStore.driverDelegateClass/" $DPM_DIST/etc/scheduler-app.properties'
-# We are modifying the componentId so that we can have a fake HA environment with multiple instances on different ports
 
 alias ch-opts-set-debug-intellij='export DPM_JAVA_OPTS=$IDE_DBG_INTELLIJ;echo DPM will wait for the debugger.'
 alias ch-opts-set-debug-vscode='export DPM_JAVA_OPTS=$IDE_DBG_VSCODE;echo DPM will wait for the debugger.'
@@ -108,8 +91,10 @@ alias ch-setup-test-org-and-sdcs=setup.test-org-and-sdcs
 unalias ch-rebuild-and-setup 2>/dev/null || true
 
 export HELP="Helpful commands. 'echo \$HELP' if you need a reminder.
-# Restart postgres, influxdb and rebuild
-setup.dbs-and-rebuild
+# Start the databases and SCH
+python $HOME/src/streamsets/dpm-scripts/dpm-3x.py --batch --verbose run
+# Restart SCH
+python $HOME/src/streamsets/dpm-scripts/dpm-3x.py --verbose restart
 # Set \$DPM_DIST
 setup.dpm-dist
 # Run and debug

@@ -33,10 +33,10 @@ export SDC_START_EXTRA_PARAMS=${SDC_START_EXTRA_PARAMS:-"--stage-lib orchestrato
 
 py-4.x-stf
 
-alias setup.credentials="source $HOME/src/streamsets/dpm-scripts/platform/.stf-env.sh"
-alias setup.test-org-and-sdcs="$HOME/src/streamsets/dpm-scripts/platform/setup-control-plane-testing.sh && setup.credentials"
+alias setup.credentials="source $HOME/src/streamsets/dpm-scripts/local_dev/4x/.stf-env.sh"
+alias setup.test-org-and-sdcs="$HOME/src/streamsets/dpm-scripts/local_dev/4x/setup-control-plane-testing.sh && setup.credentials"
 
-# Note 1: This is stolen from dpm-scripts/platform/setup-control-plane-testing.sh
+# Note 1: This is stolen from dpm-scripts/local_dev/4x/setup-control-plane-testing.sh
 # Note 2: Option "--enable-base-http-url private" made STF start unhappy
 export DPM_CMD_START_SDC='stf \
   -v \
