@@ -69,7 +69,7 @@ alias ch-setup-sdcs=setup.sdcs
 unalias ch-rebuild-and-setup 2>/dev/null || true
 
 export HELP="Helpful commands. 'echo \$HELP' if you need a reminder.
-# Start the databases and SCH
+# Start the databases and SCH, and create a test org
 python $HOME/src/streamsets/dpm-scripts/dpm-3x.py --batch --verbose run
 # Restart SCH
 python $HOME/src/streamsets/dpm-scripts/dpm-3x.py --verbose restart
