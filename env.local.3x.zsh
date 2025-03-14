@@ -49,26 +49,6 @@ alias setup.dpm-dist=ch-set-dpm-dist
 alias ch-opts-set-debug-intellij='export DPM_JAVA_OPTS=$IDE_DBG_INTELLIJ;echo DPM will wait for the debugger.'
 alias ch-opts-set-debug-vscode='export DPM_JAVA_OPTS=$IDE_DBG_VSCODE;echo DPM will wait for the debugger.'
 alias ch-run='ch-set-dpm-dist && $DPM_DIST/bin/streamsets dpm'
-alias ch-rebuild-and-restart='ch-set-dpm-dist && \
-  cd $DPM_REPO && \
-  etc_backup=$(mktemp -d) && cp $DPM_DIST/etc/* $etc_backup && \
-  ./mvnw package -Ddist -DskipTests -DdistType=dev-postgres && \
-  cp -r $etc_backup/* $DPM_DIST/etc && \
-  rm -rf $etc_backup && \
-  $DPM_DIST/bin/streamsets dpm'
-unalias ch-opts-set-debug 2>/dev/null || true
-unalias ch-opts-set-debug-ui 2>/dev/null || true
-
-alias setup.test-org='ch-set-dpm-dist && \
- python ~/src/streamsets/dpm-scripts/dpm-utils.py \
-   --dpm-dir $DPM_REPO --host host.docker.internal --port $DPM_PORT \
-   create-test-org && \
- export adminToken=$(ch-get-token $DPM_URL admin@admin admin@admin) && \
- echo -n '\''[{"id": "dpm.enable.events","value": "true"},{"id": "dpm.enforce.permissions", "value": "true"}]'\'' | \
-   http POST $DPM_URL/security/rest/v1/organization/test/configs \
-   X-Requested-By:SCH X-SS-REST-CALL:true X-SS-User-Auth-Token:$adminToken && \
- http --pretty=format GET $DPM_URL/security/rest/v1/organization/test/configs \
-   X-Requested-By:SCH X-SS-REST-CALL:true X-SS-User-Auth-Token:$adminToken | grep -e subscriptions -e "Enforce permissions" -A 4'
 
 py-3.x-stf
 
@@ -86,8 +66,6 @@ alias setup.sdcs='setup.sdc && start_sdc_and_set_authoring_var'
 alias ch-setup-sdc=setup.sdc
 alias ch-setup-sdcs=setup.sdcs
 
-alias setup.test-org-and-sdcs='setup.test-org && setup.sdc && start_sdc_and_set_authoring_var'
-alias ch-setup-test-org-and-sdcs=setup.test-org-and-sdcs
 unalias ch-rebuild-and-setup 2>/dev/null || true
 
 export HELP="Helpful commands. 'echo \$HELP' if you need a reminder.
@@ -100,9 +78,8 @@ setup.dpm-dist
 # Run and debug
 ch-opts- ...
 ch-run
-ch-rebuild-and-restart
-# Create test org + start SDCs. Uses \$SDC_VERSION and \$SDC_START_EXTRA_PARAMS
-setup.test-org-and-sdcs
+# Start 2 SDCs and capture the SHC_AUTHORING_SDC
+setup.sdcs
 # Start a single SDC
 setup.sdc
 # Sample STF execution.
