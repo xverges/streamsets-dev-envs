@@ -1,6 +1,8 @@
 #!/bin/echo Run: source
 
 source _env.prerequisites.zsh || return 1
+py-3.x-stf
+source _env.container_engine.zsh || return 1
 
 if [ -z "$ONE_PASSWORD_ITEM" ]; then
   echo 'The environment variable ONE_PASSWORD_ITEM needs to be set, and needs to specify a 1password item in the Employee vault.'
@@ -25,7 +27,8 @@ export DPM_CMD_SAMPLE_STF='stf \
   --env-var DPM_USER \
   --env-var DPM_PASSWORD \
   --env-var DPM_NEW_USER_EMAIL \
-  --docker-extra-options="-p 5678:5678/tcp" \
+  --${STF_DOCKER_PARAM}-extra-options="-p 5678:5678/tcp" \
+  --release 3.x \
 test \
   -v -ra --capture=no \
   --sch-server-url $DPM_URL \
@@ -35,6 +38,7 @@ jobs/test_jobs.py::test_simple_job_lifecycle'
 
 export DPM_CMD_START_SDC='stf \
   --env-var HOST_HOSTNAME=host.docker.internal \
+  --release 3.x $STF_CONTAINER_USE_TTY \
 start sdc \
   --enable-base-http-url private \
   --https \
@@ -45,7 +49,6 @@ start sdc \
   $(echo $SDC_START_EXTRA_PARAMS)'
 # This last echo is required. I do not get why
 
-py-3.x-stf
 
 alias echo.setup.sdc='non_redacted=$(eval echo $DPM_CMD_START_SDC) && echo ${non_redacted//$DPM_PASSWORD/xxxx}'
 alias setup.sdc='echo.setup.sdc && eval $DPM_CMD_START_SDC'
@@ -53,7 +56,7 @@ alias setup.sdc='echo.setup.sdc && eval $DPM_CMD_START_SDC'
 function start_sdc_and_set_authoring_var() {
     echo.setup.sdc
     sdc_line=$(eval $DPM_CMD_START_SDC | tee /dev/tty | grep "can be followed along")
-    export SCH_AUTHORING_SDC=$(echo $sdc_line | grep -o '\S*$')
+    export SCH_AUTHORING_SDC=$(echo $sdc_line | grep -o '\S*$' | strings)
     echo "SCH_AUTHORING_SDC is $SCH_AUTHORING_SDC"
 }
 

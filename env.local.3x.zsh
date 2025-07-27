@@ -1,6 +1,8 @@
 #!/bin/echo Run: source
 
 source _env.prerequisites.zsh || return 1
+py-3.x-stf
+source _env.container_engine.zsh || return 1
 
 name=$(basename $0); name=$name:r:s/env.//
 echo $name
@@ -24,7 +26,8 @@ export DPM_CMD_SAMPLE_STF='stf \
   -v \
   --env-var DPM_USER \
   --env-var DPM_PASSWORD \
-  --docker-extra-options="-p 5678:5678/tcp" \
+  --${STF_DOCKER_PARAM}-extra-options="-p 5678:5678/tcp" \
+  --release 3.x \
 test \
   -v -ra --capture=no \
   --sch-server-url $DPM_URL \
@@ -34,6 +37,7 @@ jobs/test_jobs.py::test_simple_job_lifecycle'
 
 export DPM_CMD_START_SDC='stf \
   --env-var HOST_HOSTNAME=host.docker.internal \
+  --release 3.x $STF_CONTAINER_USE_TTY \
 start sdc \
   --enable-base-http-url private \
   --version $SDC_VERSION \
@@ -50,7 +54,6 @@ alias ch-opts-set-debug-intellij='export DPM_JAVA_OPTS=$IDE_DBG_INTELLIJ;echo DP
 alias ch-opts-set-debug-vscode='export DPM_JAVA_OPTS=$IDE_DBG_VSCODE;echo DPM will wait for the debugger.'
 alias ch-run='ch-set-dpm-dist && $DPM_DIST/bin/streamsets dpm'
 
-py-3.x-stf
 
 alias echo.setup.sdc='non_redacted=$(eval echo $DPM_CMD_START_SDC) && echo ${non_redacted//$DPM_PASSWORD/xxxx}'
 alias setup.sdc='echo.setup.sdc && eval $DPM_CMD_START_SDC'
@@ -58,7 +61,7 @@ alias setup.sdc='echo.setup.sdc && eval $DPM_CMD_START_SDC'
 function start_sdc_and_set_authoring_var() {
     echo.setup.sdc
     sdc_line=$(eval $DPM_CMD_START_SDC | tee /dev/tty | grep "can be followed along")
-    export SCH_AUTHORING_SDC=$(echo $sdc_line | grep -o '\S*$')
+    export SCH_AUTHORING_SDC=$(echo $sdc_line | grep -o '\S*$' | strings)
     echo "SCH_AUTHORING_SDC is $SCH_AUTHORING_SDC"
 }
 

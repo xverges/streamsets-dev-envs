@@ -1,8 +1,8 @@
 #!/bin/echo Run: source
 
 source _env.prerequisites.zsh || return 1
-
-
+py-4.x-stf
+source _env.container_engine.zsh || return 1
 
 name=$(basename $0); name=$name:r:s/env.//
 echo $name
@@ -31,8 +31,6 @@ export DATAOPS_TEST_EMAIL_PASSWORD=${DATAOPS_TEST_EMAIL_PASSWORD:-UniterestingVa
 export SDC_VERSION=${SDC_VERSION:-5.12.0}
 export SDC_START_EXTRA_PARAMS=${SDC_START_EXTRA_PARAMS:-"--stage-lib orchestrator jdbc"}
 
-py-4.x-stf
-
 alias setup.credentials="source $HOME/src/streamsets/dpm-scripts/local_dev/4x/.stf-env.sh"
 alias setup.test-org-and-sdcs="$HOME/src/streamsets/dpm-scripts/local_dev/4x/setup-control-plane-testing.sh && setup.credentials"
 
@@ -42,6 +40,7 @@ export DPM_CMD_START_SDC='stf \
   -v \
   --env-var FIREBASE_API_KEY \
   --env-var HOST_HOSTNAME=host.docker.internal \
+  --release 4.x $STF_CONTAINER_USE_TTY \
   start sdc \
     --version $SDC_VERSION \
     --aster-server-url $ASTER_URL \
@@ -52,9 +51,10 @@ export DPM_CMD_START_SDC='stf \
 
 export DPM_CMD_SAMPLE_STF='stf \
   -v \
-  --docker-extra-options="-p 5678:5678/tcp" \
+  --${STF_DOCKER_PARAM}-extra-options="-p 5678:5678/tcp" \
   --env-var DATAOPS_TEST_EMAIL_PASSWORD \
   --env-var FIREBASE_API_KEY \
+  --release 4.x \
 test \
   -v -ra --capture=no \
   --sch-credential-id $CRED_ID \

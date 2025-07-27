@@ -2,6 +2,8 @@
 
 source _env.prerequisites.zsh || return 1
 source _env.credentials.zsh || return 1
+py-4.x-stf
+source _env.container_engine.zsh || return 1
 get_from_1pass
 echo "Auth set from 1Password"
 
@@ -13,11 +15,10 @@ source set-prompt-for-env.zsh $name
 export DATAOPS_TEST_EMAIL_PASSWORD=${DATAOPS_TEST_EMAIL_PASSWORD:-UniterestingValue}
 export SDC_START_EXTRA_PARAMS="--stage-lib orchestrator jdbc"
 
-py-4.x-stf
-
 export DPM_CMD_START_SDC='stf \
   --env-var FIREBASE_API_KEY \
   --env-var HOST_HOSTNAME=host.docker.internal \
+  --release 4.x $STF_CONTAINER_USER_TTY \
 start sdc \
   --enable-base-http-url private \
   --version $SDC_VERSION \
@@ -30,8 +31,10 @@ start sdc \
 
 export DPM_CMD_SAMPLE_STF='stf \
   -v \
-  --docker-extra-options="-p 5678:5678/tcp" \
+  --${STF_DOCKER_PARAM}-extra-options="-p 5678:5678/tcp" \
   --env-var DATAOPS_TEST_EMAIL_PASSWORD \
+  --env-var HOST_HOSTNAME=host.docker.internal \
+  --release 4.x \
 test \
   -v -ra --capture=no \
   --sch-credential-id $CRED_ID \
@@ -49,7 +52,7 @@ alias setup.sdc='echo.setup.sdc && eval $DPM_CMD_START_SDC'
 function start_sdc_and_set_authoring_var() {
     echo.setup.sdc
     sdc_line=$(eval $DPM_CMD_START_SDC | tee /dev/tty | grep "SDC ID:")
-    export SCH_AUTHORING_SDC=$(echo $sdc_line | sed 's/.*\: //')
+    export SCH_AUTHORING_SDC=$(echo $sdc_line | sed 's/.*\: //' | strings)
     echo "SCH_AUTHORING_SDC is $SCH_AUTHORING_SDC"
 }
 
