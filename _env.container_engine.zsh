@@ -19,6 +19,14 @@ if ! $CONTAINER_ENGINE --version >/dev/null 2>&1; then
     return 1
 fi
 
+if [ "$CONTAINER_ENGINE" = "podman" ]; then
+    podman machine ssh "bash -c 'cat /var/home/core/.config/containers/containers.conf'" | grep -q 'prepare_volume_on_create=true'
+    if [ $? -ne 0 ]; then
+        echo "Error: You are missing some configuration in podman machine. Run"
+        echo "  podman machine ssh \"bash -c 'echo \"prepare_volume_on_create=true\"' >> /var/home/core/.config/containers/containers.conf" 
+        return 1
+    fi
+fi
 
 # Set some variables to make commands independent
 if [ "$CONTAINER_ENGINE" = "podman" ]; then
