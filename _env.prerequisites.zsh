@@ -13,14 +13,16 @@ if [ ! -S /var/run/docker.sock ]; then
       return 1
     fi
   done
-  echo "No containers env running start one of ${(k)container_env}"
+  echo "No containers env running start one of Podman ${(k)container_env}"
   return 1 
 fi
 
-if grep -qE 'credsStore.*osx' ~/.docker/config.json; then
-  echo 'docker config for credsStore incompatible with STF. Run:'
-  echo "sed -i '' '/credsStore/d' ~/.docker/config.json"
-  return 1
+if [ -f ~/.docker/config.json ]; then
+  if grep -qE 'credsStore.*osx' ~/.docker/config.json; then
+    echo 'docker config for credsStore incompatible with STF. Run:'
+    echo "sed -i '' '/credsStore/d' ~/.docker/config.json"
+    return 1
+  fi
 fi
 
 #check if one password CLI is installed
@@ -30,6 +32,7 @@ if ! type op > /dev/null; then
   echo "https://developer.1password.com/docs/cli/app-integration/"
   return 1
 fi
+op signin --account ibm.ent.1password.com || return 1
 
 #check aliases for Python Virtual Envs
 which py-4.x-stf > /dev/null

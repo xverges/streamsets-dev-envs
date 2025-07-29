@@ -22,7 +22,7 @@ External dependencies:
 - [HTTPie](https://httpie.io)
 - [jq](https://jqlang.github.io/jq/)
 - [op](https://developer.1password.com/docs/cli/get-started/#install) - 1password cli
-- [Rancher Desktop](https://rancherdesktop.io) using docker
+- [Podman](https://podman.io) or [Rancher Desktop](https://rancherdesktop.io) using docker
 
 ## Scripts
 
