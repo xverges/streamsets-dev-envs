@@ -55,8 +55,7 @@ alias setup.sdc='echo.setup.sdc && eval $DPM_CMD_START_SDC'
 
 function start_sdc_and_set_authoring_var() {
     echo.setup.sdc
-    sdc_line=$(eval $DPM_CMD_START_SDC | tee /dev/tty | grep "can be followed along")
-    export SCH_AUTHORING_SDC=$(echo $sdc_line | grep -o '\S*$' | strings)
+    export SCH_AUTHORING_SDC=$(eval $DPM_CMD_START_SDC | tee /dev/tty | grep "Updating data collector" | sed 's/.*Updating data collector \([^ ]*\).*/\1/')
     echo "SCH_AUTHORING_SDC is $SCH_AUTHORING_SDC"
 }
 
